@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Home from './components/Home/Home';
-import Login from './components/Login/Login';
-import Signup from './components/Signup/Signup';
-import DoctorPage from './components/DoctorPage/DoctorPage';
-import PatientPage from './components/PatientPage/PatientPage';
-import Basicinfo from './components/PatientPage/Basicinfo';
-import MedicalRecordRequests from './components/PatientPage/ViewRequest';
-import ManageRequest from './components/PatientPage/ManageRequest';
-import RequestAccess from './components/DoctorPage/RequestAccess';
-import ViewRecord from './components/DoctorPage/ViewRecord';
-import AddRecord from "./components/DoctorPage/AddRecord";
-import { Toaster } from 'react-hot-toast';
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import DoctorPage from "./components/DoctorPage";
+import PatientPage from "./components/PatientPage";
+import Basicinfo from "./components/Basicinfo";
+import MedicalRecordRequests from "./components/ViewRequest";
+import ManageRequest from "./components/ManageRequest";
+import RequestAccess from "./components/RequestAccess";
+import ViewRecord from "./components/ViewRecord";
+import AddRecord from "./components/AddRecord";
+import { Toaster } from "react-hot-toast";
 
-import { auth } from './firebase';
+import { auth } from "./firebase";
 
-import './App.css';
+import "./App.css";
 
 function App() {
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
         setUserName(user.displayName);
-      } else setUserName('');
+      } else setUserName("");
     });
   }, []);
 

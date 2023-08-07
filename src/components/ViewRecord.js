@@ -1,27 +1,39 @@
 import React from "react";
-import { Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { BsPlusCircle } from 'react-icons/bs'; // Import the "+" icon
-import NavbarCompDoctor from "../NavbarCompDoctor";
+import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { BsPlusCircle } from "react-icons/bs"; // Import the "+" icon
+import NavbarCompDoctor from "./NavbarCompDoctor";
 
 const ViewRecord = () => {
   // Replace this dummy data with actual medical history data fetched from the database
   const medicalHistory = [
-    { date: '2023-07-30', prescribe_by: 'dr. tuba', diagnosis: 'Fever', medication: 'Paracetamol', remarks: 'Rest for two days' },
-    { date: '2023-07-25', prescribe_by: 'dr. tuba', diagnosis: 'Headache', medication: 'Ibuprofen', remarks: 'Drink plenty of water' },
+    {
+      date: "2023-07-30",
+      prescribe_by: "dr. tuba",
+      diagnosis: "Fever",
+      medication: "Paracetamol",
+      remarks: "Rest for two days",
+    },
+    {
+      date: "2023-07-25",
+      prescribe_by: "dr. tuba",
+      diagnosis: "Headache",
+      medication: "Ibuprofen",
+      remarks: "Drink plenty of water",
+    },
     // Add more medical history records here...
   ];
 
   const patientData = {
-    fullName: 'John Doe',
+    fullName: "John Doe",
     age: 30,
-    gender: 'Male',
+    gender: "Male",
     height: 175,
     weight: 70,
-    address: '123 Main Street',
-    contact: '123-456-7890',
-    bloodType: 'A+',
-    allergy: 'Pollen',
+    address: "123 Main Street",
+    contact: "123-456-7890",
+    bloodType: "A+",
+    allergy: "Pollen",
   };
 
   return (
@@ -30,41 +42,59 @@ const ViewRecord = () => {
       <div className="container mt-4">
         <h1>Patient Profile</h1>
         <Table striped bordered hover responsive>
-        <tbody>
+          <tbody>
             <tr>
-              <td><strong>Full Name</strong></td>
+              <td>
+                <strong>Full Name</strong>
+              </td>
               <td>{patientData.fullName}</td>
             </tr>
             <tr>
-              <td><strong>Age</strong></td>
+              <td>
+                <strong>Age</strong>
+              </td>
               <td>{patientData.age}</td>
             </tr>
             <tr>
-              <td><strong>Gender</strong></td>
+              <td>
+                <strong>Gender</strong>
+              </td>
               <td>{patientData.gender}</td>
             </tr>
             <tr>
-              <td><strong>Height (cm)</strong></td>
+              <td>
+                <strong>Height (cm)</strong>
+              </td>
               <td>{patientData.height}</td>
             </tr>
             <tr>
-              <td><strong>Weight (kg)</strong></td>
+              <td>
+                <strong>Weight (kg)</strong>
+              </td>
               <td>{patientData.weight}</td>
             </tr>
             <tr>
-              <td><strong>House Address</strong></td>
+              <td>
+                <strong>House Address</strong>
+              </td>
               <td>{patientData.address}</td>
             </tr>
             <tr>
-              <td><strong>Contact Number</strong></td>
+              <td>
+                <strong>Contact Number</strong>
+              </td>
               <td>{patientData.contact}</td>
             </tr>
             <tr>
-              <td><strong>Blood Type</strong></td>
+              <td>
+                <strong>Blood Type</strong>
+              </td>
               <td>{patientData.bloodType}</td>
             </tr>
             <tr>
-              <td><strong>Allergy</strong></td>
+              <td>
+                <strong>Allergy</strong>
+              </td>
               <td>{patientData.allergy}</td>
             </tr>
           </tbody>
@@ -79,7 +109,7 @@ const ViewRecord = () => {
         </div>
 
         <Table striped bordered hover responsive>
-        <thead>
+          <thead>
             <tr>
               <th>Date</th>
               <th>Doctor</th>

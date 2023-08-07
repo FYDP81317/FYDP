@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import NavbarCompDoctor from "../NavbarCompDoctor";
+import NavbarCompDoctor from "./NavbarCompDoctor";
 
 const AddRecord = () => {
   // Replace this with the actual logged-in doctor's name fetched from the database

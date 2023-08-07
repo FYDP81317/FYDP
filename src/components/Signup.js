@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import InputControl from "../InputControl/InputControl";
-import { auth } from "../../firebase";
+import InputControl from "./InputControl";
+import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import { Form, Button } from "react-bootstrap";
 
@@ -84,15 +84,23 @@ function Signup() {
               {/* Role selection */}
               <div className="d-flex justify-content-center mt-3 gap-3">
                 <p className="me-3">Choose your role:</p>
-                <Button 
-                  variant={values.role === "doctor" ? "primary" : "outline-primary"}
-                  onClick={() => setValues((prev) => ({ ...prev, role: "doctor" }))}
+                <Button
+                  variant={
+                    values.role === "doctor" ? "primary" : "outline-primary"
+                  }
+                  onClick={() =>
+                    setValues((prev) => ({ ...prev, role: "doctor" }))
+                  }
                 >
                   Doctor
                 </Button>
                 <Button
-                  variant={values.role === "patient" ? "primary" : "outline-primary"}
-                  onClick={() => setValues((prev) => ({ ...prev, role: "patient" }))}
+                  variant={
+                    values.role === "patient" ? "primary" : "outline-primary"
+                  }
+                  onClick={() =>
+                    setValues((prev) => ({ ...prev, role: "patient" }))
+                  }
                 >
                   Patient
                 </Button>
@@ -100,7 +108,10 @@ function Signup() {
 
               <div className="text-center mt-3">
                 <b className="text-danger">{errorMsg}</b>
-                <Button onClick={handleSubmission} disabled={submitButtonDisabled}>
+                <Button
+                  onClick={handleSubmission}
+                  disabled={submitButtonDisabled}
+                >
                   Signup
                 </Button>
                 <p className="mt-2">

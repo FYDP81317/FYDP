@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import InputControl from "../InputControl/InputControl";
-import { auth } from "../../firebase";
+import InputControl from "./InputControl";
+import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import { Form, Button } from "react-bootstrap";
 
@@ -81,14 +81,22 @@ function Login() {
               <div className="d-flex justify-content-center mt-3 gap-3">
                 <p className="mt-2 me-3">Choose your role:</p>
                 <Button
-                  variant={values.role === "doctor" ? "primary" : "outline-primary"}
-                  onClick={() => setValues((prev) => ({ ...prev, role: "doctor" }))}
+                  variant={
+                    values.role === "doctor" ? "primary" : "outline-primary"
+                  }
+                  onClick={() =>
+                    setValues((prev) => ({ ...prev, role: "doctor" }))
+                  }
                 >
                   Doctor
                 </Button>
                 <Button
-                  variant={values.role === "patient" ? "primary" : "outline-primary"}
-                  onClick={() => setValues((prev) => ({ ...prev, role: "patient" }))}
+                  variant={
+                    values.role === "patient" ? "primary" : "outline-primary"
+                  }
+                  onClick={() =>
+                    setValues((prev) => ({ ...prev, role: "patient" }))
+                  }
                 >
                   Patient
                 </Button>
@@ -99,8 +107,12 @@ function Login() {
               </div>
 
               <div className="text-center mt-3">
-                <br/>
-                <Button disabled={submitButtonDisabled} onClick={handleSubmission} size="lg">
+                <br />
+                <Button
+                  disabled={submitButtonDisabled}
+                  onClick={handleSubmission}
+                  size="lg"
+                >
                   Login
                 </Button>
                 <p className="mt-2">

@@ -1,18 +1,28 @@
 import React, { useState } from "react";
-import { Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import NavbarCompDoctor from "../NavbarCompDoctor";
+import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import NavbarCompDoctor from "./NavbarCompDoctor";
 
 const DoctorPage = () => {
   // Replace this dummy data with actual patient data fetched from the database
   const patientList = [
-    { id: 1, fullName: 'John Doe', email: 'john@gmail.com', contact: '123-456-7890' },
-    { id: 2, fullName: 'Jane Smith', email: 'jane@gmail.com', contact: '987-654-3210' },
+    {
+      id: 1,
+      fullName: "John Doe",
+      email: "john@gmail.com",
+      contact: "123-456-7890",
+    },
+    {
+      id: 2,
+      fullName: "Jane Smith",
+      email: "jane@gmail.com",
+      contact: "987-654-3210",
+    },
     // Add more patients here...
   ];
 
   // Replace this with the actual doctor name fetched from the database
-  const doctorName = 'John Smith';
+  const doctorName = "John Smith";
 
   return (
     <div>
@@ -38,9 +48,7 @@ const DoctorPage = () => {
                 <td>{index + 1}</td>
                 <td>
                   {/* Use Link component to navigate to ViewRecord page with patient ID */}
-                  <Link to={`/ViewRecord`}>
-                    {patient.fullName}
-                  </Link>
+                  <Link to={`/ViewRecord`}>{patient.fullName}</Link>
                 </td>
                 <td>{patient.email}</td>
                 <td>{patient.contact}</td>
