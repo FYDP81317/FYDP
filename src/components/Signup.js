@@ -9,16 +9,14 @@ import { Form, Button } from "react-bootstrap";
 function Signup() {
   const navigate = useNavigate();
   const [values, setValues] = useState({
-    name: "",
     email: "",
     pass: "",
-    role: "patient", // Default role set to "patient"
   });
   const [errorMsg, setErrorMsg] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
 
   const handleSubmission = () => {
-    if (!values.name || !values.email || !values.pass) {
+    if (!values.email || !values.pass) {
       setErrorMsg("Fill all fields");
       return;
     }
@@ -35,9 +33,7 @@ function Signup() {
         setTimeout(() => {
           toast.success("User Created Successfully!");
         }, 200);
-
-        // Redirect to the respective role page based on the selected role
-        navigate(values.role === "doctor" ? "/DoctorPage" : "/PatientPage");
+        navigate("/user-type");
       })
       .catch((err) => {
         setSubmitButtonDisabled(false);
@@ -57,14 +53,6 @@ function Signup() {
             <h2 className="text-center">Signup</h2>
             <Form>
               <InputControl
-                type="text"
-                label="Name"
-                placeholder="Enter your name"
-                onChange={(event) =>
-                  setValues((prev) => ({ ...prev, name: event.target.value }))
-                }
-              />
-              <InputControl
                 type="email"
                 label="Email"
                 placeholder="Enter email address"
@@ -80,31 +68,6 @@ function Signup() {
                   setValues((prev) => ({ ...prev, pass: event.target.value }))
                 }
               />
-
-              {/* Role selection */}
-              <div className="d-flex justify-content-center mt-3 gap-3">
-                <p className="me-3">Choose your role:</p>
-                <Button
-                  variant={
-                    values.role === "doctor" ? "primary" : "outline-primary"
-                  }
-                  onClick={() =>
-                    setValues((prev) => ({ ...prev, role: "doctor" }))
-                  }
-                >
-                  Doctor
-                </Button>
-                <Button
-                  variant={
-                    values.role === "patient" ? "primary" : "outline-primary"
-                  }
-                  onClick={() =>
-                    setValues((prev) => ({ ...prev, role: "patient" }))
-                  }
-                >
-                  Patient
-                </Button>
-              </div>
 
               <div className="text-center mt-3">
                 <b className="text-danger">{errorMsg}</b>

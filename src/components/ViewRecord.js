@@ -1,40 +1,94 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { BsPlusCircle } from "react-icons/bs"; // Import the "+" icon
+import { Link, useNavigate } from "react-router-dom";
+import { BsPlusCircle } from "react-icons/bs";
 import NavbarCompDoctor from "./NavbarCompDoctor";
+import { useParams } from "react-router-dom";
+import { getDocById } from "../utils/firestore";
+import ClipLoader from "react-spinners/ClipLoader";
+import { db } from "../firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+  query,
+  where,
+} from "firebase/firestore";
+import { toast } from "react-hot-toast";
 
 const ViewRecord = () => {
-  // Replace this dummy data with actual medical history data fetched from the database
-  const medicalHistory = [
-    {
-      date: "2023-07-30",
-      prescribe_by: "dr. tuba",
-      diagnosis: "Fever",
-      medication: "Paracetamol",
-      remarks: "Rest for two days",
-    },
-    {
-      date: "2023-07-25",
-      prescribe_by: "dr. tuba",
-      diagnosis: "Headache",
-      medication: "Ibuprofen",
-      remarks: "Drink plenty of water",
-    },
-    // Add more medical history records here...
-  ];
+  const params = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState("");
+  const [decryptData, setDecryptData] = useState("");
+  const userEmail = localStorage.getItem("userEmail");
 
-  const patientData = {
-    fullName: "John Doe",
-    age: 30,
-    gender: "Male",
-    height: 175,
-    weight: 70,
-    address: "123 Main Street",
-    contact: "123-456-7890",
-    bloodType: "A+",
-    allergy: "Pollen",
-  };
+  // get original decrypt data from firebase
+  useEffect(() => {
+    const fetchMedicalRecordData = async () => {
+      try {
+        setLoading(true);
+        const medicalDataCollectionRef = collection(db, "medicalrecords");
+        const q = query(medicalDataCollectionRef);
+
+        const querySnapshot = await getDocs(q);
+
+        const matchingDocuments = querySnapshot.docs.reduce((result, doc) => {
+          const userData = doc.data();
+          if (
+            userData.decryptData &&
+            userData.decryptData.patientemail === params?.id
+          ) {
+            result.push(userData.decryptData);
+          }
+          return result;
+        }, []);
+
+        if (matchingDocuments.length > 0) {
+          setLoading(false);
+          setDecryptData(matchingDocuments);
+        } else {
+          console.error("No matching users found!");
+        }
+      } catch (error) {
+        toast.error("An error occurred while fetching the documents.");
+      }
+    };
+    fetchMedicalRecordData();
+  }, [params]);
+
+  // get original decrypt data from firebase endss here
+
+  // getting user data by email in params
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const patientsDataCollectionRef = collection(db, "patientsdata");
+        const q = query(
+          patientsDataCollectionRef,
+          where("useremail", "==", params?.id)
+        );
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          setLoading(false);
+          const userData = querySnapshot.docs[0].data();
+          setUserData(userData);
+        } else {
+          toast.error("User not found!");
+        }
+      } catch (error) {
+        toast.error("Document Doesn't Exixts!");
+      }
+    };
+
+    fetchUserData();
+  }, [params]);
 
   return (
     <div>
@@ -47,55 +101,145 @@ const ViewRecord = () => {
               <td>
                 <strong>Full Name</strong>
               </td>
-              <td>{patientData.fullName}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.name
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Age</strong>
               </td>
-              <td>{patientData.age}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.age
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Gender</strong>
               </td>
-              <td>{patientData.gender}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.gender
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Height (cm)</strong>
               </td>
-              <td>{patientData.height}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.height
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Weight (kg)</strong>
               </td>
-              <td>{patientData.weight}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.weight
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>House Address</strong>
               </td>
-              <td>{patientData.address}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.address
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Contact Number</strong>
               </td>
-              <td>{patientData.contact}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.contact
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Blood Type</strong>
               </td>
-              <td>{patientData.bloodType}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.bloodtype
+                )}
+              </td>
             </tr>
             <tr>
               <td>
                 <strong>Allergy</strong>
               </td>
-              <td>{patientData.allergy}</td>
+              <td>
+                {!userData ? (
+                  <ClipLoader
+                    loading={loading}
+                    color={"#0B5ED7"}
+                    size={"12px"}
+                  />
+                ) : (
+                  userData?.allergy
+                )}
+              </td>
             </tr>
           </tbody>
         </Table>
@@ -103,7 +247,7 @@ const ViewRecord = () => {
         <div className="d-flex justify-content-between align-items-center">
           <h1>Medical History</h1>
           {/* Button to redirect to "Add Record" page */}
-          <Link to="/AddRecord" className="btn btn-primary">
+          <Link to={`/add-record/${params?.id}`} className="btn btn-primary">
             <BsPlusCircle className="me-2" /> Add New Record
           </Link>
         </div>
@@ -119,15 +263,19 @@ const ViewRecord = () => {
             </tr>
           </thead>
           <tbody>
-            {medicalHistory.map((record, index) => (
-              <tr key={index}>
-                <td>{record.date}</td>
-                <td>{record.prescribe_by}</td>
-                <td>{record.diagnosis}</td>
-                <td>{record.medication}</td>
-                <td>{record.remarks}</td>
-              </tr>
-            ))}
+            {decryptData ? (
+              decryptData?.map((item) => (
+                <tr key={item?.id}>
+                  <td>{item?.date}</td>
+                  <td>{item?.doctoremail}</td>
+                  <td>{item?.diagnosis}</td>
+                  <td>{item?.medication}</td>
+                  <td>{item?.remarks}</td>
+                </tr>
+              ))
+            ) : (
+              <p>No Medical Record For This User..!</p>
+            )}
           </tbody>
         </Table>
       </div>

@@ -1,9 +1,12 @@
-import React from 'react';
-import { Table, Button } from 'react-bootstrap';
+import React from "react";
+import { Table, Button } from "react-bootstrap";
 
-const MedicalRecordRequestsTable = ({ requests, handleAccept, handleReject }) => {
+const MedicalRecordRequestsTable = ({
+  requests,
+  handleAccept,
+  handleReject,
+}) => {
   return (
-    
     <Table striped bordered hover responsive>
       <thead>
         <tr>
@@ -22,7 +25,7 @@ const MedicalRecordRequestsTable = ({ requests, handleAccept, handleReject }) =>
             <td>
               <Button variant="success" onClick={() => handleAccept(index)}>
                 Accept
-              </Button>{' '}
+              </Button>
               <Button variant="danger" onClick={() => handleReject(index)}>
                 Reject
               </Button>

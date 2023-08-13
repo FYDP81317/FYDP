@@ -1,20 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import InputControl from "./InputControl";
 import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import { Form, Button } from "react-bootstrap";
+import { db } from "../firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 function Login() {
   const navigate = useNavigate();
   const [values, setValues] = useState({
     email: "",
     pass: "",
-    role: "patient", // Set the default role to "patient"
   });
   const [errorMsg, setErrorMsg] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
+  const rolesCollectionRef = collection(db, "roles");
+
+  localStorage.setItem("userEmail", values.email);
+
+  const getRolesOfUsers = async () => {
+    const data = await getDocs(rolesCollectionRef);
+    const requests = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    const matchingRequest = requests.find((request) => {
+      if (request.useremail === values?.email) {
+        if (request.role === "patient") {
+          navigate("/view-request");
+        } else if (request.role === "doctor") {
+          navigate("/doctor-page");
+        }
+        return true;
+      }
+      return false;
+    });
+  };
 
   const handleSubmission = () => {
     if (!values.email || !values.pass) {
@@ -22,7 +49,7 @@ function Login() {
       return;
     }
     setErrorMsg("");
-
+    getRolesOfUsers();
     setSubmitButtonDisabled(true);
     signInWithEmailAndPassword(auth, values.email, values.pass)
       .then(async (res) => {
@@ -30,17 +57,6 @@ function Login() {
         setTimeout(() => {
           toast.success("Login Successfully!");
         }, 200);
-
-        if (values.role === "doctor") {
-          // If role is "doctor", navigate to the doctor main page
-          navigate("/DoctorPage");
-        } else if (values.role === "patient") {
-          // If role is "patient", navigate to the patient main page
-          navigate("/PatientPage");
-        } else {
-          // If role is neither "doctor" nor "patient", navigate to the default main page
-          navigate("/");
-        }
       })
       .catch((err) => {
         setSubmitButtonDisabled(false);
@@ -77,31 +93,6 @@ function Login() {
                 placeholder="Enter Password"
               />
 
-              {/* Role selection */}
-              <div className="d-flex justify-content-center mt-3 gap-3">
-                <p className="mt-2 me-3">Choose your role:</p>
-                <Button
-                  variant={
-                    values.role === "doctor" ? "primary" : "outline-primary"
-                  }
-                  onClick={() =>
-                    setValues((prev) => ({ ...prev, role: "doctor" }))
-                  }
-                >
-                  Doctor
-                </Button>
-                <Button
-                  variant={
-                    values.role === "patient" ? "primary" : "outline-primary"
-                  }
-                  onClick={() =>
-                    setValues((prev) => ({ ...prev, role: "patient" }))
-                  }
-                >
-                  Patient
-                </Button>
-              </div>
-
               <div className="text-center mt-3">
                 <div className="text-danger">{errorMsg}</div>
               </div>
@@ -116,9 +107,9 @@ function Login() {
                   Login
                 </Button>
                 <p className="mt-2">
-                  Don't have an account?{" "}
+                  Don't have an account?
                   <span>
-                    <Link to="/signup">Sign up</Link>
+                    <Link to="/">Sign up</Link>
                   </span>
                 </p>
               </div>

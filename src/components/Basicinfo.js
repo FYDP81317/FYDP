@@ -1,21 +1,68 @@
-import React from "react";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
+import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import toast from "react-hot-toast";
 import NavbarCompPatient from "./NavbarCompPatient";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 function Basicinfo() {
+  const [values, setValues] = useState({
+    address: "",
+    age: "",
+    allergy: "",
+    bloodtype: "",
+    contact: "",
+    gender: "",
+    height: "",
+    name: "",
+    weight: "",
+  });
+  const patientDataCollectionRef = collection(db, "patientsdata");
+  const userEmail = localStorage.getItem("userEmail");
+
+  const handleAddPatientData = async (e) => {
+    e?.preventDefault();
+    if (
+      values.address &&
+      values.age &&
+      values.allergy &&
+      values.bloodtype &&
+      values.contact &&
+      values.gender &&
+      values.height &&
+      values.name &&
+      values.weight &&
+      userEmail
+    ) {
+      try {
+        await addDoc(patientDataCollectionRef, {
+          address: values?.address,
+          age: Number(values?.age),
+          allergy: values?.allergy,
+          bloodtype: values?.bloodtype,
+          contact: Number(values?.contact),
+          gender: values?.gender,
+          height: Number(values?.height),
+          name: values?.name,
+          useremail: userEmail,
+          weight: Number(values?.weight),
+        });
+        toast.success("Your info has been saved successfully!");
+      } catch (error) {
+        toast.error("Error adding patient data:", error);
+      }
+    } else {
+      toast.error("Fill all fields!");
+    }
+  };
+
   return (
     <>
       <NavbarCompPatient />
-      <Row className="justify-content-center">
+      <Row className="justify-content-center mt-4 mb-4">
         <Col xs={12} sm={12} md={6}>
           <Form>
             <Form.Group as={Row} className="mb-3" controlId="nameBox">
@@ -23,7 +70,16 @@ function Basicinfo() {
                 Full Name
               </Form.Label>
               <Col sm="12">
-                <Form.Control type="text" placeholder="Enter your name" />
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      name: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  placeholder="Enter your name"
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mb-3" controlId="ageBox">
@@ -31,7 +87,16 @@ function Basicinfo() {
                 Age
               </Form.Label>
               <Col sm="12">
-                <Form.Control type="number" placeholder="Enter your Age" />
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      age: e.target.value,
+                    }));
+                  }}
+                  type="number"
+                  placeholder="Enter your Age"
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mb-3">
@@ -40,6 +105,12 @@ function Basicinfo() {
               </Form.Label>
               <Col sm="12">
                 <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      height: e.target.value,
+                    }));
+                  }}
                   type="number"
                   placeholder="Enter your height in centimeters"
                 />
@@ -53,6 +124,12 @@ function Basicinfo() {
               </Form.Label>
               <Col sm="12">
                 <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      weight: e.target.value,
+                    }));
+                  }}
                   type="number"
                   placeholder="Enter your weight in kilograms"
                 />
@@ -62,6 +139,12 @@ function Basicinfo() {
               <Form.Label sm="2">House Address</Form.Label>
               <Col sm="12">
                 <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      address: e.target.value,
+                    }));
+                  }}
                   type="textarea"
                   placeholder="Enter your address"
                 />
@@ -70,7 +153,16 @@ function Basicinfo() {
             <Form.Group as={Row} className="mb-3" controlId="contactBox">
               <Form.Label sm="2">Contact Number</Form.Label>
               <Col sm="12">
-                <Form.Control type="text" placeholder="Enter your number" />
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      contact: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  placeholder="Enter your number"
+                />
               </Col>
             </Form.Group>
             <Form.Group as={Row} className="mb-3" controlId="allergyBox">
@@ -78,65 +170,63 @@ function Basicinfo() {
                 Allergy
               </Form.Label>
               <Col sm="12">
-                <Form.Control type="text" placeholder="Enter allergy if any" />
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      allergy: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  placeholder="Enter allergy if any"
+                />
               </Col>
             </Form.Group>
-            {/* Gender */}
-            <Form.Group as={Row} className="mb-3" controlId="genderBox">
+
+            {/*Gender*/}
+            <Form.Group as={Row} className="mb-3" controlId="allergyBox">
               <Form.Label column sm="2">
                 Gender
               </Form.Label>
               <Col sm="12">
-                <div className="d-flex gap-3">
-                  <div>
-                    <input type="radio" name="gender" value="male" />
-                    <label className="form-check-label">Male</label>
-                  </div>
-                  <div>
-                    <input type="radio" name="gender" value="female" />
-                    <label className="form-check-label">Female</label>
-                  </div>
-                  <div>
-                    <input type="radio" name="gender" value="other" />
-                    <label className="form-check-label">Other</label>
-                  </div>
-                </div>
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      gender: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  placeholder="Enter gender"
+                />
               </Col>
             </Form.Group>
 
             {/* Blood Type */}
-            <Form.Group as={Row} className="mb-3" controlId="bloodTypeBox">
+            <Form.Group as={Row} className="mb-3" controlId="allergyBox">
               <Form.Label column sm="2">
-                Blood Type
+                Blood Group
               </Form.Label>
               <Col sm="12">
-                <Form.Control as="select">
-                  <option value="">Select Blood Type</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                </Form.Control>
+                <Form.Control
+                  onChange={(e) => {
+                    setValues((prevState) => ({
+                      ...prevState,
+                      bloodtype: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  placeholder="Enter bloodtype"
+                />
               </Col>
             </Form.Group>
           </Form>
           <Button
-            variant="outline-secondary"
-            id="button-addon2"
-            controlId="insBtn"
+            type="button"
+            className="btn btn-primary"
+            onClick={handleAddPatientData}
           >
-            Submit
-          </Button>
-          <Button
-            variant="outline-secondary"
-            id="button-addon2"
-            controlId="updBtn"
-          >
-            Edit
+            Save Info
           </Button>
         </Col>
       </Row>

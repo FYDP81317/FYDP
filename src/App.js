@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import { auth } from "./firebase";
 
 import "./App.css";
+import UserType from "./components/UserType";
 
 function App() {
   const [userName, setUserName] = useState("");
@@ -34,17 +35,16 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/DoctorPage" element={<DoctorPage />} />
-          <Route path="/PatientPage" element={<PatientPage />} />
-          <Route path="/ViewRequest" element={<MedicalRecordRequests />} />
-          <Route path="/ManageRequest" element={<ManageRequest />} />
-          <Route path="/RequestAccess" element={<RequestAccess />} />
-          <Route path="/ViewRecord" element={<ViewRecord />} />
-          <Route path="/Basicinfo" element={<Basicinfo />} />
-          <Route path="/AddRecord" element={<AddRecord />} />
-
-          <Route path="/" element={<Home name={userName} />} />
+          <Route path="/" element={<Signup />} />
+          <Route path="/doctor-page" element={<DoctorPage />} />
+          <Route path="/patient-profile/:id" element={<PatientPage />} />
+          <Route path="/view-request" element={<MedicalRecordRequests />} />
+          <Route path="/manage-request" element={<ManageRequest />} />
+          <Route path="/request-access" element={<RequestAccess />} />
+          <Route path="/view-record/:id" element={<ViewRecord />} />
+          <Route path="/user-type" element={<UserType />} />
+          <Route path="/basic-info" element={<Basicinfo />} />
+          <Route path="/add-record/:id" element={<AddRecord />} />
         </Routes>
       </Router>
       <Toaster position="top-right" />

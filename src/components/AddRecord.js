@@ -1,13 +1,53 @@
 import React, { useState } from "react";
+import CryptoJS from "crypto-js";
+import { verifier } from "../blockchain/verification_instance"
 import { Form, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavbarCompDoctor from "./NavbarCompDoctor";
+import { IoMdArrowBack } from "react-icons/io";
+import { db } from "../firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { toast } from "react-hot-toast";
 
 const AddRecord = () => {
-  // Replace this with the actual logged-in doctor's name fetched from the database
+  const params = useParams();
+  const navigate = useNavigate();
+  const userEmail = localStorage.getItem("userEmail");
+  const [values, setValues] = useState({
+    diagnosis: "",
+    medication: "",
+    remarks: "",
+    date: new Date(),
+    patientemail: params?.id,
+    doctoremail: userEmail,
+  });
+  const [encrptedData, setEncrptedData] = useState("");
+  const [originalData, setOriginalData] = useState("");
+
+  const generateRandomKey = () => {
+    const keyLength = 32;
+    const charset =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let randomKey = "";
+
+    for (let i = 0; i < keyLength; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      randomKey += charset[randomIndex];
+    }
+    return randomKey;
+  };
+
+  const [secretKey, setSecretKey] = useState(generateRandomKey());
   const loggedInDoctorName = "Dr. John Smith";
 
-  const { patientEmail } = useParams();
+  const currentDate = new Date();
 
   const [recordData, setRecordData] = useState({
     date: "",
@@ -17,48 +57,90 @@ const AddRecord = () => {
     remarks: "",
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setRecordData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  const addRecordsDataCollectionRef = collection(db, "medicalrecords");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add logic to save the record data to the database
-    console.log("Record data:", recordData);
-    // Clear the form fields after submission
-    setRecordData({
-      date: "",
-      doctor: loggedInDoctorName,
-      diagnosis: "",
-      medication: "",
-      remarks: "",
-    });
+  const handleAddNewMedicalRecord = async (e) => {
+    e?.preventDefault();
+    if (
+      values.diagnosis &&
+      values.medication &&
+      values.remarks &&
+      userEmail &&
+      secretKey &&
+      values?.date &&
+      values?.patientemail
+    ) {
+      try {
+        // encryption of data
+        const cipherData = CryptoJS.AES.encrypt(
+          JSON.stringify(values),
+          secretKey
+        ).toString();
+        setEncrptedData(cipherData);
+
+        // decryption of data
+        let bytes = CryptoJS.AES.decrypt(cipherData, secretKey);
+        let originalText = bytes.toString(CryptoJS.enc.Utf8);
+        setOriginalData(JSON.parse(originalText));
+       // console.log(originalText)
+        
+        let eachRecordNewArray = [userEmail, values.diagnosis, values.medication, values.remarks]
+        //console.log()
+        await verifier
+        .uploadHash(eachRecordNewArray, "0xc4323611FdD306e4E4A922D1700aAeb8e824651C");
+       // console.log(originalText)
+
+        //  send data to firebase encrypted and decrypted
+        await addDoc(addRecordsDataCollectionRef, {
+          encrptedData: cipherData,
+          decryptData: JSON.parse(originalText),
+        });
+       
+        toast.success("Medical record for this user is saved successfully!");
+      } catch (error) {
+        console.log(error)
+        toast.error("Error adding medical record for this user:", error);
+      }
+    } else {
+      toast.error("Fill all fields!");
+    }
   };
 
   return (
     <div>
       <NavbarCompDoctor />
-      <div className="container mt-4">
-        <h1>Add New Medical Record</h1>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
+      <div className="container mt-4 mb-4">
+        <div className="d-flex align-items-center gap-3">
+          <IoMdArrowBack
+            style={{
+              height: "36px",
+              width: "36px",
+              backgrounColor: "#fafafa",
+              cursor: "pointer",
+            }}
+            className="border border-secondary rounded-3 px-2 py-2"
+            onClick={() => navigate(-1)}
+          />
+          <h3 className="mt-2">Add New Medical Record</h3>
+        </div>
+
+        <Form onSubmit={handleAddNewMedicalRecord}>
+          <Form.Group className="mb-4 mt-4">
             <Form.Label>Date</Form.Label>
             <Form.Control
-              type="date"
+              type="text"
+              disabled={"true"}
               name="date"
-              value={recordData.date}
-              onChange={handleInputChange}
-              required
+              value={currentDate}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Doctor</Form.Label>
+            <Form.Label>Doctor Email</Form.Label>
             <Form.Control
               type="text"
+              disabled={"true"}
               name="doctor"
-              value={recordData.doctor}
-              readOnly
+              value={userEmail}
             />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -66,8 +148,12 @@ const AddRecord = () => {
             <Form.Control
               type="text"
               name="diagnosis"
-              value={recordData.diagnosis}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                setValues((prevState) => ({
+                  ...prevState,
+                  diagnosis: e.target.value,
+                }));
+              }}
               required
             />
           </Form.Group>
@@ -76,8 +162,12 @@ const AddRecord = () => {
             <Form.Control
               type="text"
               name="medication"
-              value={recordData.medication}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                setValues((prevState) => ({
+                  ...prevState,
+                  medication: e.target.value,
+                }));
+              }}
               required
             />
           </Form.Group>
@@ -85,9 +175,14 @@ const AddRecord = () => {
             <Form.Label>Remarks</Form.Label>
             <Form.Control
               as="textarea"
+              type="text"
               name="remarks"
-              value={recordData.remarks}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                setValues((prevState) => ({
+                  ...prevState,
+                  remarks: e.target.value,
+                }));
+              }}
               required
             />
           </Form.Group>
